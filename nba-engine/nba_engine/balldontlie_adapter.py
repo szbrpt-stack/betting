@@ -36,7 +36,7 @@ def parse_stats(payload, *, season=2026):
         game = stat["game"]
         if game.get("season") != season:
             raise ValueError("Unexpected season")
-        if not str(game.get("status", "")).lower().startswith("final"):
+        if (game.get("status_state") is not None and game["status_state"] != "final") or (game.get("status_state") is None and not str(game.get("status", "")).lower().startswith("final")):
             raise ValueError("Only completed games accepted")
         try:
             played_on = date.fromisoformat(str(game["date"])[:10])
