@@ -16,7 +16,7 @@ def test_walk_forward_no_future_training(tmp_path):
                 rows.append({"GAME_ID":f"{year}-{day}-{home}",
                     "GAME_DATE_EST":f"{year}-11-{day:02}",
                     "HOME_TEAM_ID":home,"VISITOR_TEAM_ID":away,
-                    "PTS_home":100+day+(year%3),"PTS_away":90+(day%7)})
+                    "PTS_home":(108+(day%5) if day%2==0 else 88+(day%5)),"PTS_away":98+(day%4)})
     path=tmp_path/"games.csv"
     pd.DataFrame(rows).to_csv(path,index=False)
     result=evaluate(load_games(path),tmp_path/"out")
