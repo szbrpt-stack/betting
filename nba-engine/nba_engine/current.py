@@ -5,7 +5,6 @@ All team ratings must be supplied as recent, timestamped observations.
 """
 from dataclasses import dataclass
 from datetime import datetime, timezone
-from math import exp, sqrt
 
 
 @dataclass(frozen=True)
@@ -62,10 +61,10 @@ def project(home: TeamState, away: TeamState, *, league_off_rating: float,
     possessions = (home.pace + away.pace) / 2
     # Ratings are adjusted around a supplied current league offensive average.
     home_pp100 = (home.offensive_rating + home.offense_lineup_delta
-                  + away.defensive_rating + away.defense_lineup_delta) / 2
+                  + away.defensive_rating + away.defense_lineup_delta - league_off_rating)
     away_pp100 = (away.offensive_rating + away.offense_lineup_delta
-                  + home.defensive_rating + home.defense_lineup_delta) / 2
-    # The midpoint of offense and opponent defense is a heuristic, not a
+                  + home.defensive_rating + home.defense_lineup_delta - league_off_rating)
+    # Additive deviations from league offense are a heuristic, not a
     # validated league-wide estimator. Do not label as predictive accuracy.
     home_points = possessions * home_pp100 / 100 + home_court_points / 2
     away_points = possessions * away_pp100 / 100 - home_court_points / 2
@@ -79,11 +78,10 @@ def project(home: TeamState, away: TeamState, *, league_off_rating: float,
         "lineups_confirmed": home.lineup_confirmed and away.lineup_confirmed,
         "win_probability": None,
         "betting_viability": "unavailable_without_verified_odds_and_validated_uncertainty",
-        "method": "recent-offense/opponent-defense midpoint, pace, explicit measured lineup adjustments",
+        "method": "league-centered offense/defense deviations, pace, measured lineup adjustments",
         "cautions": [
             "No automatic injury or player-status inference",
             "Missing lineup effects must not be treated as zero impact",
             "No probability until residual uncertainty is validated on recent out-of-sample games",
-            "League reference is validated as an input but not used in the midpoint formula",
         ],
     }
