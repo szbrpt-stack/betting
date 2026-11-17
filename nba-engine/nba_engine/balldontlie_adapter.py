@@ -5,6 +5,7 @@ No HTTP requests or credential handling. Operator must establish usage rights.
 import argparse
 import json
 import math
+from datetime import date
 from pathlib import Path
 import pandas as pd
 
@@ -37,7 +38,20 @@ def parse_stats(payload, *, season=2026):
             raise ValueError("Unexpected season")
         if not str(game.get("status", "")).lower().startswith("final"):
             raise ValueError("Only completed games accepted")
+        try:
+            played_on = date.fromisoformat(str(game["date"])[:10])
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("Invalid game date") from exc
+        if not (date(season, 10, 1) <= played_on < date(season + 1, 8, 1)):
+            raise ValueError("Game date outside NBA season window")
         player, team = stat["player"], stat["team"]
+        if stat.get("min") in (None, ""):
+            if stat.get("pts") not in (None, 0):
+                raise ValueError("Points recorded without minutes")
+            continue
+        pts = stat.get("pts")
+        if isinstance(pts, bool) or not isinstance(pts, int) or pts < 0:
+            raise ValueError("Points must be a nonnegative integer")
         if team["id"] not in (game["home_team_id"], game["visitor_team_id"]):
             raise ValueError("Team not in game")
         rows.append({
@@ -46,7 +60,7 @@ def parse_stats(payload, *, season=2026):
             "player_id": str(player["id"]),
             "player_name": f'{player["first_name"]} {player["last_name"]}',
             "team_id": str(team["id"]), "minutes": _minutes(stat["min"]),
-            "points": int(stat["pts"]),
+            "points": pts,
         })
         if rows[-1]["points"] < 0:
             raise ValueError("Negative points")
