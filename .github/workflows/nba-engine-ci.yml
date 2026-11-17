@@ -28,6 +28,7 @@ jobs:
           python -m nba_engine.pipeline --csv data/games.csv --out outputs/v01
           python -m nba_engine.v02 --csv data/games.csv --out outputs/v02
           python -m nba_engine.audit --csv data/games.csv --predictions outputs/v02/predictions.csv --out outputs/audit
+          python -m nba_engine.reliability --predictions outputs/v02/predictions.csv --out outputs/reliability
       - name: Upload evaluation metrics (no third-party data)
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
@@ -39,5 +40,8 @@ jobs:
             nba-engine/outputs/audit/audit.json
             nba-engine/outputs/audit/coverage.csv
             nba-engine/outputs/audit/calibration.csv
+            nba-engine/outputs/reliability/reliability.json
+            nba-engine/outputs/reliability/season_bins.csv
+            nba-engine/outputs/reliability/season_calibration.csv
           if-no-files-found: error
           retention-days: 7
