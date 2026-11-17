@@ -9,7 +9,7 @@ def make_csv(path, permitted="true"):
         dict(team=t,as_of="2026-11-17T15:00:00Z",season="2026-27",
              games=12,offensive_rating=115,defensive_rating=110,pace=100,
              source="licensed provider",license_reference="license-contract-123",
-             betting_use_permitted=permitted)
+             statistical_research_permitted=permitted)
         for t in ("A","B")
     ]).to_csv(path,index=False)
 
