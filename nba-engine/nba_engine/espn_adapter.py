@@ -59,7 +59,7 @@ def parse_summary_players(payload, *, game_id, game_date, season="2026-27"):
     for team in teams:
         team_id = str((team.get("team") or {})["id"])
         for block in team.get("statistics") or []:
-            labels = [str(x).upper() for x in block.get("labels") or []]
+            labels = [str(x).upper() for x in (block.get("names") or block.get("labels") or [])]
             if "MIN" not in labels or "PTS" not in labels:
                 continue
             for entry in block.get("athletes") or []:
@@ -76,6 +76,8 @@ def parse_summary_players(payload, *, game_id, game_date, season="2026-27"):
                         minutes = int(m) + int(s) / 60
                     else:
                         minutes = float(mins)
+                    if not minutes == minutes:
+                        raise ValueError("Non-finite minutes")
                     points = int(stats[labels.index("PTS")])
                     if not 0 <= minutes <= 60 or points < 0:
                         raise ValueError("Invalid minutes or points")
