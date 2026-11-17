@@ -57,3 +57,12 @@ def test_reject_wrong_team():
     payload["data"][0]["team"]["id"] = 999
     with pytest.raises(ValueError, match="Team not"):
         parse_stats(payload)
+
+
+def test_documented_status_state_takes_priority():
+    payload = sample(status="Final")
+    payload["data"][0]["game"]["status_state"] = "pre"
+    with pytest.raises(ValueError, match="completed"):
+        parse_stats(payload)
+    payload["data"][0]["game"]["status_state"] = "final"
+    assert len(parse_stats(payload)) == 1
