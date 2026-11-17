@@ -1,6 +1,6 @@
 # S2S Sigma NBA v0.3 — current-state research prototype
 
-The v0.3 module `nba_engine.current` is an **offline calculator**, not a live NBA feed, trained prediction model, or betting recommendation.
+The v0.3 module `nba_engine.current` is an **offline calculator**, not a live NBA feed, trained prediction model, or validated probability model.
 
 ## Input contract
 - Current-season team offensive/defensive rating (points per 100 possessions), pace (possessions per 48 minutes), game count and timezone-aware snapshot timestamp.
@@ -22,9 +22,9 @@ No production scraper or source connection is enabled yet. Before fetching offic
 2. Capture provenance: source URL, timestamp, season, competition stage, units and player/team identifiers.
 3. Separate confirmed injuries and lineups from unconfirmed projections; never invent missing statuses.
 4. Test current-season coverage, freshness, player movement, roster reconciliation and changes in stat definitions.
-5. Evaluate next-game forecasts with pre-tipoff snapshots only, and compare against recent baselines and closing market prices when permitted.
+5. Evaluate next-game forecasts with pre-tipoff snapshots only, and compare against recent baselines and observed outcomes and recent naive statistical baselines.
 
 ## Safety / scope
 - No historical-season team ratings are silently substituted for current ratings.
-- No probability, expected value, bet size, ROI or profitability is output.
+- No probability or quantitative scenario viability is output until predictive uncertainty is validated.
 - Production Render, Supabase and main branch remain untouched.
