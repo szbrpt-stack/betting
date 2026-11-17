@@ -37,3 +37,19 @@ def test_espn_names_header():
     result=parse_summary_players(payload,game_id="g1",game_date="2026-11-16T23:00Z")
     assert result.iloc[0].minutes==pytest.approx(28.5)
     assert result.iloc[0].points==19
+
+
+def test_official_nba_reference_orlando_boston_20261116():
+    """Reference values from NBA official final box; ESPN-shaped input is constructed, not captured."""
+    payload = {"boxscore": {"players": [{"team": {"id": "19"}, "statistics": [{
+        "names": ["MIN", "PTS"], "athletes": [
+            {"athlete": {"id": "reference_bane", "displayName": "Desmond Bane"}, "stats": ["39:18", "24"]},
+            {"athlete": {"id": "reference_wagner", "displayName": "Franz Wagner"}, "stats": ["37:34", "21"]},
+        ]}]}]}}
+    rows = parse_summary_players(payload, game_id="official_reference_20261116_orlbos",
+                                 game_date="2026-11-16T00:00:00Z")
+    by_name = rows.set_index("player_name")
+    assert by_name.loc["Desmond Bane", "points"] == 24
+    assert by_name.loc["Desmond Bane", "minutes"] == pytest.approx(39 + 18 / 60)
+    assert by_name.loc["Franz Wagner", "points"] == 21
+    assert by_name.loc["Franz Wagner", "minutes"] == pytest.approx(37 + 34 / 60)
