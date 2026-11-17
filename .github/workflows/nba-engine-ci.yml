@@ -21,17 +21,19 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Run unit tests
         run: python -m pytest -q
-      - name: Personal research backtest
+      - name: Personal research v0.1 and v0.2 backtests
         if: github.event_name == 'push'
-        continue-on-error: true
         run: |
           python download_games.py --out data/games.csv
-          python -m nba_engine.pipeline --csv data/games.csv --out outputs
+          python -m nba_engine.pipeline --csv data/games.csv --out outputs/v01
+          python -m nba_engine.v02 --csv data/games.csv --out outputs/v02
       - name: Upload evaluation metrics (no third-party data)
-        if: always() && github.event_name == 'push'
+        if: github.event_name == 'push'
         uses: actions/upload-artifact@v4
         with:
           name: nba-evaluation-metrics
-          path: nba-engine/outputs/metrics.json
-          if-no-files-found: ignore
+          path: |
+            nba-engine/outputs/v01/metrics.json
+            nba-engine/outputs/v02/metrics.json
+          if-no-files-found: error
           retention-days: 7
