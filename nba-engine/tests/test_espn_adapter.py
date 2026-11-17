@@ -1,3 +1,4 @@
+import pandas as pd
 import pytest
 from nba_engine.espn_adapter import parse_scoreboard, parse_summary_players
 
@@ -13,7 +14,7 @@ def test_scoreboard_final_and_scheduled():
     assert final.iloc[0].home_points==112
     scheduled=parse_scoreboard(scoreboard(False))
     assert scheduled.iloc[0].completed==False
-    assert scheduled.iloc[0].home_points!=scheduled.iloc[0].home_points
+    assert pd.isna(scheduled.iloc[0].home_points)
 
 def test_boxscore_minutes_and_dnp():
     data={"boxscore":{"players":[{"team":{"id":"1"},"statistics":[{
