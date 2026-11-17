@@ -15,7 +15,10 @@ def audit(games, predictions, out="outputs/audit"):
     games = games.copy()
     games["season"] = games.date.map(season_of)
     features = features_from_history(games)
-    features["season"] = features.date.map(season_of)
+    if features.empty:
+        features = pd.DataFrame(columns=["date", "season"])
+    else:
+        features["season"] = features.date.map(season_of)
     pred = pd.read_csv(predictions, dtype={"game_id": str})
     required = {"game_id", "season", "home_win", "prob_home_win"}
     if required - set(pred.columns):
