@@ -1,6 +1,6 @@
 """S2S Sigma v0.3: transparent, current-state NBA matchup calculator.
 
-No inferred player impacts, injury status, odds, or live data.
+No inferred player impacts, injury status, or live data.
 All team ratings must be supplied as recent, timestamped observations.
 """
 from dataclasses import dataclass
@@ -33,7 +33,7 @@ def _timestamp(value):
 def project(home: TeamState, away: TeamState, *, league_off_rating: float,
             league_pace: float, home_court_points: float = 0.0,
             max_age_hours: float = 48, now: str | None = None):
-    """Project expected points, not a probability or betting recommendation.
+    """Project expected points; probability requires validated uncertainty.
 
     Ratings are points per 100 possessions. Home-court adjustment is points
     per GAME and must be empirically estimated outside this module.
@@ -77,7 +77,7 @@ def project(home: TeamState, away: TeamState, *, league_off_rating: float,
         "expected_home_margin": round(home_points - away_points, 2),
         "lineups_confirmed": home.lineup_confirmed and away.lineup_confirmed,
         "win_probability": None,
-        "betting_viability": "unavailable_without_verified_odds_and_validated_uncertainty",
+        "statistical_viability": "not_quantified_without_validated_uncertainty",
         "method": "league-centered offense/defense deviations, pace, measured lineup adjustments",
         "cautions": [
             "No automatic injury or player-status inference",
