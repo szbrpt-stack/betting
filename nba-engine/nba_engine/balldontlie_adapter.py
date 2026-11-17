@@ -35,7 +35,7 @@ def parse_stats(payload, *, season=2026):
         game = stat["game"]
         if game.get("season") != season:
             raise ValueError("Unexpected season")
-        if game.get("status_state") != "final":
+        if not str(game.get("status", "")).lower().startswith("final"):
             raise ValueError("Only completed games accepted")
         player, team = stat["player"], stat["team"]
         if team["id"] not in (game["home_team_id"], game["visitor_team_id"]):
