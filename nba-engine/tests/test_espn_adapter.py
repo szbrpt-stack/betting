@@ -30,3 +30,10 @@ def test_boxscore_minutes_and_dnp():
 def test_bad_structure_rejected():
     with pytest.raises(ValueError):
         parse_scoreboard({"events":[{"id":"x","competitions":[]}]})
+
+
+def test_espn_names_header():
+    payload={"boxscore":{"players":[{"team":{"id":"1"},"statistics":[{"names":["MIN","PTS"],"athletes":[{"athlete":{"id":"p9","displayName":"Example"},"stats":["28:30","19"]}]}]}]}}
+    result=parse_summary_players(payload,game_id="g1",game_date="2026-11-16T23:00Z")
+    assert result.iloc[0].minutes==pytest.approx(28.5)
+    assert result.iloc[0].points==19
