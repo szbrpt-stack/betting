@@ -1,7 +1,7 @@
 """Validated, licensed current-season CSV input for S2S Sigma v0.3.
 
 This module performs no network requests. The operator must verify that the
-data license explicitly allows the intended use (including betting analysis).
+data terms allow the intended statistical research use.
 """
 import argparse
 import json
@@ -15,7 +15,7 @@ from .current import TeamState, project
 REQUIRED = {
     "team", "as_of", "season", "games", "offensive_rating",
     "defensive_rating", "pace", "source", "license_reference",
-    "betting_use_permitted",
+    "statistical_research_permitted",
 }
 
 
@@ -34,9 +34,9 @@ def load_current_states(csv, *, season="2026-27"):
     if (frame[["source", "license_reference"]].astype(str).apply(lambda col: col.str.strip().eq("")).any().any()):
         raise ValueError("Source and license reference cannot be empty")
     # Require an explicit attestation; never infer permission from 'free'.
-    permission = frame.betting_use_permitted.astype(str).str.strip().str.lower()
+    permission = frame.statistical_research_permitted.astype(str).str.strip().str.lower()
     if not permission.eq("true").all():
-        raise ValueError("Explicit betting-use authorization required for every record")
+        raise ValueError("Explicit statistical-research authorization required for every record")
     numeric = ["games", "offensive_rating", "defensive_rating", "pace"]
     for name in numeric:
         frame[name] = pd.to_numeric(frame[name], errors="coerce")
