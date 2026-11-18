@@ -1,0 +1,181 @@
+{
+  "schemaVersion": 1,
+  "documentId": "example-nba-lal-gsw-2026-11-18",
+  "provenance": {
+    "generator": "ChatGPT manual research",
+    "generatedAt": "2026-11-18T09:30:00-05:00",
+    "description": "Ejemplo de referencia para importar evidencia deportiva estructurada en S2S Sigma.",
+    "originalDocumentUrl": "https://example.com/s2s-sigma/example-nba-research"
+  },
+  "event": {
+    "id": "imported-nba-lal-gsw-2026-11-18",
+    "sportId": "basketball",
+    "competitionId": "nba",
+    "name": "Los Angeles Lakers vs Golden State Warriors",
+    "participants": [
+      {
+        "id": "lal",
+        "name": "Los Angeles Lakers",
+        "kind": "TEAM",
+        "role": "home"
+      },
+      {
+        "id": "gsw",
+        "name": "Golden State Warriors",
+        "kind": "TEAM",
+        "role": "away"
+      }
+    ],
+    "startsAt": "2026-11-18T22:00:00-05:00",
+    "timeZone": "America/Bogota",
+    "venue": "Crypto.com Arena",
+    "status": "SCHEDULED",
+    "format": "TEAM",
+    "context": "Partido de temporada regular. Los valores de este archivo son exclusivamente ilustrativos del contrato.",
+    "retrievedAt": "2026-11-18T09:25:00-05:00",
+    "isDemo": false,
+    "competitionName": "NBA",
+    "sources": [
+      {
+        "id": "example-official-schedule",
+        "name": "Official schedule example",
+        "url": "https://example.com/sports/schedule",
+        "publishedAt": "2026-11-17T20:00:00-05:00",
+        "consultedAt": "2026-11-18T09:20:00-05:00",
+        "cutoffAt": "2026-11-18T09:30:00-05:00",
+        "isDemo": false
+      }
+    ]
+  },
+  "investigations": [
+    {
+      "request": {
+        "id": "request-example-lal-points",
+        "eventId": "imported-nba-lal-gsw-2026-11-18",
+        "question": {
+          "id": "question-example-lal-points",
+          "eventId": "imported-nba-lal-gsw-2026-11-18",
+          "text": "¿Cuál es la media descriptiva de puntos anotados por Los Angeles Lakers en sus tres partidos anteriores completados?",
+          "target": {
+            "variable": "team_points",
+            "unit": "points",
+            "horizon": "Tres partidos anteriores completados",
+            "evaluationCriteria": "Calcular estadísticas descriptivas con observaciones anteriores al corte.",
+            "operator": "none",
+            "threshold": null
+          },
+          "custom": false
+        },
+        "requestedAt": "2026-11-18T09:30:00-05:00",
+        "cutoffAt": "2026-11-18T09:30:00-05:00",
+        "event": {
+          "id": "imported-nba-lal-gsw-2026-11-18",
+          "sportId": "basketball",
+          "competitionId": "nba",
+          "name": "Los Angeles Lakers vs Golden State Warriors",
+          "participants": [
+            {
+              "id": "lal",
+              "name": "Los Angeles Lakers",
+              "kind": "TEAM",
+              "role": "home"
+            },
+            {
+              "id": "gsw",
+              "name": "Golden State Warriors",
+              "kind": "TEAM",
+              "role": "away"
+            }
+          ],
+          "startsAt": "2026-11-18T22:00:00-05:00",
+          "timeZone": "America/Bogota",
+          "venue": "Crypto.com Arena",
+          "status": "SCHEDULED",
+          "format": "TEAM",
+          "context": "Partido de temporada regular. Los valores de este archivo son exclusivamente ilustrativos del contrato.",
+          "retrievedAt": "2026-11-18T09:25:00-05:00",
+          "isDemo": false,
+          "competitionName": "NBA",
+          "sources": []
+        }
+      },
+      "response": {
+        "requestId": "request-example-lal-points",
+        "observations": [
+          {
+            "id": "obs-example-lal-1",
+            "eventId": "imported-nba-lal-gsw-2026-11-18",
+            "subjectId": "lal",
+            "variable": "team_points",
+            "value": 112.0,
+            "unit": "points",
+            "observationPeriod": "Juego completado 1",
+            "completedAt": "2026-11-10T23:00:00-05:00",
+            "sourceId": "example-box-scores",
+            "consultedAt": "2026-11-18T09:20:00-05:00",
+            "cutoffAt": "2026-11-18T09:30:00-05:00"
+          },
+          {
+            "id": "obs-example-lal-2",
+            "eventId": "imported-nba-lal-gsw-2026-11-18",
+            "subjectId": "lal",
+            "variable": "team_points",
+            "value": 118.0,
+            "unit": "points",
+            "observationPeriod": "Juego completado 2",
+            "completedAt": "2026-11-13T23:00:00-05:00",
+            "sourceId": "example-box-scores",
+            "consultedAt": "2026-11-18T09:20:00-05:00",
+            "cutoffAt": "2026-11-18T09:30:00-05:00"
+          },
+          {
+            "id": "obs-example-lal-3",
+            "eventId": "imported-nba-lal-gsw-2026-11-18",
+            "subjectId": "lal",
+            "variable": "team_points",
+            "value": 109.0,
+            "unit": "points",
+            "observationPeriod": "Juego completado 3",
+            "completedAt": "2026-11-16T23:00:00-05:00",
+            "sourceId": "example-box-scores",
+            "consultedAt": "2026-11-18T09:20:00-05:00",
+            "cutoffAt": "2026-11-18T09:30:00-05:00"
+          }
+        ],
+        "sources": [
+          {
+            "id": "example-box-scores",
+            "name": "Box scores example",
+            "url": "https://example.com/sports/box-scores",
+            "publishedAt": "2026-11-17T08:00:00-05:00",
+            "consultedAt": "2026-11-18T09:20:00-05:00",
+            "cutoffAt": "2026-11-18T09:30:00-05:00",
+            "isDemo": false
+          }
+        ],
+        "factors": [
+          {
+            "family": "PARTICIPANTS",
+            "description": "La identidad del equipo se conserva en todas las observaciones.",
+            "evidenceState": "VALID",
+            "sourceIds": ["example-box-scores"]
+          },
+          {
+            "family": "LOAD_AND_RECOVERY",
+            "description": "No se aportaron métricas específicas de carga y recuperación.",
+            "evidenceState": "MISSING",
+            "sourceIds": []
+          },
+          {
+            "family": "PHYSICAL_ENVIRONMENT",
+            "description": "No se aportaron mediciones del entorno físico.",
+            "evidenceState": "MISSING",
+            "sourceIds": []
+          }
+        ],
+        "receivedAt": "2026-11-18T09:30:00-05:00",
+        "isDemo": false
+      }
+    }
+  ]
+}
