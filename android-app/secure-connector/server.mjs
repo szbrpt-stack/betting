@@ -3,8 +3,10 @@ import { createHash } from "node:crypto";
 import OpenAI from "openai";
 
 const port = Number(process.env.PORT ?? 8787);
-const model = process.env.OPENAI_MODEL ?? "gpt-5-mini";
-const apiKey = process.env.OPENAI_API_KEY?.trim();
+const openAIModel = process.env.OPENAI_MODEL ?? "gpt-5-mini";
+const geminiModel = process.env.GEMINI_MODEL ?? "gemini-2.5-flash-lite";
+const apiKey = (process.env.OPENAI_API_KEY ?? process.env.OPEN_API)?.trim();
+const geminiApiKey = process.env.GEMINI_API_KEY?.trim();
 const client = apiKey ? new OpenAI({ apiKey }) : null;
 
 const participantSchema = {
@@ -114,14 +116,38 @@ function webSources(response, consultedAt, cutoffAt) {
 }
 
 async function createStructuredResponse({ input, schema, name }) {
+  if (geminiApiKey) {
+    const prompt = input.map((message) => `${message.role.toUpperCase()}: ${message.content}`).join("\n\n");
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-goog-api-key": geminiApiKey },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        tools: [{ google_search: {} }],
+        generationConfig: { responseMimeType: "application/json", responseJsonSchema: schema },
+      }),
+    });
+    const payload = await geminiResponse.json();
+    if (!geminiResponse.ok) {
+      throw serviceError(payload?.error?.status || "GEMINI_ERROR", payload?.error?.message || "Gemini rechazó la solicitud.", geminiResponse.status);
+    }
+    const candidate = payload.candidates?.[0];
+    const outputText = candidate?.content?.parts?.map((part) => part.text || "").join("")?.trim();
+    if (!outputText) throw serviceError("GEMINI_EMPTY_RESPONSE", "Gemini no devolvió contenido estructurado.", 502);
+    const sources = (candidate?.groundingMetadata?.groundingChunks ?? [])
+      .map((chunk) => chunk.web)
+      .filter((source) => source?.uri)
+      .map((source) => ({ url: source.uri, title: source.title }));
+    return { output_text: outputText, output: [{ type: "web_search_call", action: { sources } }] };
+  }
   if (!client) {
-    const error = new Error("Falta OPENAI_API_KEY en el servidor.");
+    const error = new Error("Falta GEMINI_API_KEY u OPENAI_API_KEY en el servidor.");
     error.status = 503;
     error.code = "OPENAI_AUTHENTICATION";
     throw error;
   }
   return client.responses.create({
-    model,
+    model: openAIModel,
     tools: [{ type: "web_search" }],
     tool_choice: "auto",
     include: ["web_search_call.action.sources"],
@@ -210,7 +236,13 @@ function send(response, status, payload) {
 const server = http.createServer(async (request, response) => {
   try {
     if (request.method === "GET" && request.url === "/health") {
-      send(response, 200, { status: "ok", openaiConfigured: Boolean(apiKey), model });
+      send(response, 200, {
+        status: "ok",
+        provider: geminiApiKey ? "gemini" : apiKey ? "openai" : null,
+        geminiConfigured: Boolean(geminiApiKey),
+        openaiConfigured: Boolean(apiKey),
+        model: geminiApiKey ? geminiModel : openAIModel,
+      });
       return;
     }
     if (request.method !== "POST") throw serviceError("NOT_FOUND", "Ruta no encontrada.", 404);
@@ -228,5 +260,5 @@ const server = http.createServer(async (request, response) => {
 });
 
 server.listen(port, "0.0.0.0", () => {
-  console.log(`S2S Sigma secure connector listening on :${port} with ${model}`);
+  console.log(`S2S Sigma secure connector listening on :${port} with ${geminiApiKey ? geminiModel : openAIModel}`);
 });
