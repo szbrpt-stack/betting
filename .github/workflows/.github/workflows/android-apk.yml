@@ -1,0 +1,45 @@
+name: S2S Sigma Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/nba-engine
+    paths:
+      - 'android-app/**'
+      - '.github/workflows/android-apk.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: android-app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+          cache-dependency-path: android-app/**/*.gradle*
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Install Android SDK packages
+        run: sdkmanager --install 'platforms;android-36' 'build-tools;36.0.0'
+      - name: Enable Gradle wrapper
+        run: chmod +x ./gradlew
+      - name: Unit tests and debug APK
+        run: ./gradlew --no-daemon --stacktrace testDebugUnitTest assembleDebug
+      - name: Upload installable APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: S2S-Sigma-debug-${{ github.sha }}
+          path: android-app/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
